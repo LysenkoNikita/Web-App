@@ -3,7 +3,7 @@ import Button from './Button';
 
 const Navigation = () => {
   return (
-    <div className="nav_form" style={{backgroundColor: '#f4f4f4', display: 'flex', flexWrap: 'nowrap', justifyContent: 'center'}}>
+    <div className="nav_form" style={{display: 'flex', flexWrap: 'nowrap', justifyContent: 'center'}}>
         <nav className="navigation" style={{maragin: "50"}}>
             <Button onClick={() => alert("Домашняя страница")}>Домашняя страница</Button>
             <Button onClick={() => alert("О нас")}>О нас</Button>
