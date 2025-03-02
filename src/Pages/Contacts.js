@@ -5,6 +5,7 @@ import Button from "../Components/Button";
 import React, {useContext} from "react";
 import {ThemeContext} from "../Context/context";
 import Container from "../Components/Container";
+import RegistrationForm from "../Components/Feedback";
 
 export const Contacts = () => {
     const {toggleTheme} = useContext(ThemeContext);
@@ -15,7 +16,7 @@ export const Contacts = () => {
                 <Button onClick={toggleTheme}>Переключить тему</Button>
             </Header>
             <Container>
-                <h2>Contacts</h2>
+                <RegistrationForm />
             </Container>
             <Footer />
         </>
