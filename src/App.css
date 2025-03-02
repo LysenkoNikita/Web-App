@@ -13,6 +13,16 @@
   }
 }
 
+body.light {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body.dark {
+  background-color: #222;
+  color: #ffffff;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;

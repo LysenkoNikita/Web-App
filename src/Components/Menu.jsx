@@ -2,11 +2,16 @@ import React from 'react';
 import Button from "./Button";
 
 const Menu = ({ labs, onSelect }) => (
-    <nav style={{
+
+    <div>
+        <nav style={{
+        height: '100%', // Занимает всю высоту родителя
+        display: 'flex', // Включаем Flexbox
+        flexDirection: 'column', // Элементы внутри выстраиваются вертикально
+        justifyContent: 'flex-start',
         width: '200px',
-        backgroundColor: '#f4f4f4',
         padding: '1rem'
-    }}>
+        }}>
         <h3>Список работ:</h3>
         <ul style={{ listStyle: 'none', padding: 0 }}>
             {labs.map(lab => (
@@ -22,9 +27,10 @@ const Menu = ({ labs, onSelect }) => (
                         {lab.title}
                     </Button>
                 </li>
-            ))}
-        </ul>
-    </nav>
+                ))}
+            </ul>
+        </nav>
+    </div>
 );
 
 export default Menu;
