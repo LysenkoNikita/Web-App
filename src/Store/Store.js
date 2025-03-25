@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "../Components/CounterSlice";
+import AuthReducer from "../Components/Slices/AuthSlice";
+import ContentReducer from "../Components/Slices/ContentSlice";
+import MenuReducer from "../Components/Slices/MenuSlice";
 
 const store = configureStore({
     reducer: {
-        counter: counterReducer,
+        auth: AuthReducer,
+        menu: MenuReducer,
+        content: ContentReducer
     }
 });
 

@@ -1,0 +1,93 @@
+body.light .theme_toggle{
+    background-color: #ffffff;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+body.dark .theme_toggle{
+    background-color: #333;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+body.light .icon{
+    filter: invert(1);
+    width: 30px;
+    height: 30px;
+}
+
+body.dark .icon{
+    width: 30px;
+    height: 30px;
+}
+
+.profile {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+}
+
+body.light .dropdown_menu {
+    background-color: #ffffff;
+    color: #333;
+    align-content: center;
+    position: absolute;
+    cursor: default;
+    top: 100%;
+    left: 0;
+    border: 1px solid #000000;
+    padding: 10px;
+    z-index: 1000;
+    min-width: 100%;
+    box-sizing: border-box;
+    visibility: hidden; /* Скрываем элемент, но он остается в потоке документа */
+    opacity: 0; /* Делаем элемент полностью прозрачным */
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+body.dark .dropdown_menu {
+    background-color: #333;
+    color: #ffffff;
+    align-content: center;
+    position: absolute;
+    cursor: default;
+    top: 100%;
+    left: 0;
+    border: 1px solid #ffffff;
+    padding: 10px;
+    z-index: 1000;
+    min-width: 100%;
+    box-sizing: border-box;
+    visibility: hidden; /* Скрываем элемент, но он остается в потоке документа */
+    opacity: 0; /* Делаем элемент полностью прозрачным */
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.profile:hover .dropdown_menu {
+    visibility: visible;
+    align-content: center;
+    opacity: 1;
+}
+
+.dropdown_menu button {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 5px 0;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.btn_profile{
+    cursor: pointer;
+}
+
+.btn_logout{
+    cursor: pointer;
+}

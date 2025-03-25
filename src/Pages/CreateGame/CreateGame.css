@@ -1,0 +1,113 @@
+.createGame {
+    max-width: 600px;
+    min-height: 750px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.info_container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.img_container {
+    flex: 1;
+    margin-right: 20px;
+    text-align: center;
+}
+
+.img_container img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.image_placeholder {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    color: #666;
+    font-size: 16px;
+}
+
+.image_input {
+    margin-top: 10px;
+}
+
+.description_container {
+    text-align: center;
+}
+
+.description_input {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical;
+    margin-bottom: 20px;
+}
+
+.buttons_container {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.save_button, .cancel_button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.save_button {
+    background-color: #007bff;
+    color: #fff;
+    margin-right: 50px;
+}
+
+.save_button:hover {
+    background-color: #0056b3;
+}
+
+.cancel_button {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.cancel_button:hover {
+    background-color: #c82333;
+}
+
+.details_container {
+    margin-top: 20px;
+}
+
+.input_field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}

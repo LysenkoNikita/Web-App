@@ -1,0 +1,114 @@
+.home_page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.5s ease-in-out; /* Изменили на transform для лучшей производительности */
+    width: 100%;
+}
+
+.menu_container {
+    width: 300px;
+    height: 100vh;
+    position: absolute; /* Изменили на fixed для правильного позиционирования */
+    border-bottom-right-radius: 30px;
+    left: -300px;
+    top: 0;
+    color: white;
+    background-color: #2b2929;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: left 0.5s ease-in-out;
+    z-index: 1000;
+}
+
+.menu_container.open {
+    left: 0;
+    top: 0;
+    transition: left 0.5s ease-in-out;
+}
+
+.games_container {
+    flex: 1;
+    width: 100%;
+    max-width: 1200px;
+    padding: 16px;
+    margin: 0 auto;
+    transition: transform 0.5s ease-in-out;
+}
+
+.games_container.shifted {
+    transform: translateX(250px);
+    transition: transform 0.5s ease-in-out;
+}
+
+.addGame{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    cursor: pointer;
+}
+
+.games_container_block {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.pagination-container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px 16px;
+    border-top: 1px solid #eee;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    cursor: pointer;
+    border: none;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+.pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.pagination span {
+    font-size: 14px;
+}
+
+@media (max-width: 1200px) {
+    .games_container_block {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .games_container_block {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .games_container_block {
+        grid-template-columns: 1fr;
+    }
+}

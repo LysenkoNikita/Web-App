@@ -1,14 +1,54 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {Route, Routes, Navigate, useLocation} from "react-router-dom";
+import {useSelector, useDispatch} from "react-redux";
 
-import Content from "./Components/Content";
+import {Templates} from "./Pages/Templates/Templates";
+import {Auth} from "./Pages/Auth/Auth";
+import {Home} from "./Pages/Home/Home";
+import {About} from "./Pages/About";
+import {Profile} from "./Pages/Profile/Profile";
+import {Contacts} from "./Pages/Contacts";
+import {Feedback} from "./Pages/Feedback/Feedback";
+import {CreateGame} from "./Pages/CreateGame/CreateGame";
+import {GamePage} from "./Pages/GamePage/GamePage";
 
 import "./App.css"
+import {login} from "./Components/Slices/AuthSlice";
 
 
 const App = () => {
   return (
-      <Content />
+      <Routers />
   );
+}
+
+const Routers = () => {
+
+    const { isAuth, user} = useSelector((state) => state.auth);
+    const dispatch = useDispatch();
+    const location = useLocation();
+
+    useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem('user'));
+        if (userData) {
+            dispatch(login(userData));
+        }}, [dispatch])
+
+    return (
+        <Routes>
+            <Route path="/" element={location.pathname === "/" ? ( <Navigate to="/home" replace />) : ( <Templates /> )}>
+                <Route path="home" element={<Home />} />
+                <Route path="about" element={<About />} />
+                <Route path="contacts" element={<Contacts />} />
+                <Route path="support" element={<Feedback />} />
+                <Route path="games/:id" element={<GamePage />} />
+                <Route path="profile" element={isAuth ? (<Profile user={user}/>): (<Home />)} />
+                <Route path={"createGame"} element={<CreateGame />} />
+            </Route>
+            <Route path="/auth" element={isAuth ? (<Navigate to={location.state?.from || "/home"} replace />) : (<Auth />)} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
+        </Routes>
+    );
 }
 
 export default App;

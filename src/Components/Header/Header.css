@@ -1,0 +1,9 @@
+.header_container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 70px;
+    background-color: #2b2929;
+    color: white;
+    box-sizing: border-box;
+}

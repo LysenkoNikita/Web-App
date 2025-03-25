@@ -1,0 +1,14 @@
+footer {
+    bottom:0;
+}
+
+.footer_container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 100%;
+    background-color: #2b2929;
+    color: white;
+    box-sizing: border-box;
+}
