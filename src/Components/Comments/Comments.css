@@ -1,4 +1,4 @@
-/* Основные стили комментариев */
+
 .game-comments {
     margin-top: 3rem;
     padding-top: 2rem;
@@ -13,7 +13,6 @@
     display: inline-block;
 }
 
-/* Форма комментария */
 .comment-form {
     margin-bottom: 2rem;
 }
@@ -74,7 +73,6 @@
     box-shadow: 0 6px 8px rgba(52, 152, 219, 0.4);
 }
 
-/* Список комментариев */
 .comments-list {
     display: flex;
     flex-direction: column;
@@ -89,7 +87,6 @@
     border-radius: 8px;
 }
 
-/* Отдельный комментарий */
 .comment {
     background: white;
     padding: 1.5rem;
@@ -121,7 +118,6 @@
     margin: 0;
 }
 
-/* Адаптация для мобильных */
 @media (max-width: 768px) {
     .comment-input {
         max-width: 100%;

@@ -61,7 +61,6 @@ label {
     min-height: 120px;
 }
 
-/* Стили для кнопки */
 .submit-button {
     background-color: #007bff;
     color: white;
@@ -77,7 +76,6 @@ label {
     background-color: #0056b3;
 }
 
-/* Сообщения */
 .success-message {
     text-align: center;
     color: #28a745;
