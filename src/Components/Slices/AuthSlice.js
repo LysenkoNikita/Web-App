@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    user: null,
-    isAuth: false,
+    user: JSON.parse(localStorage.getItem("user")) || null,
+    isAuth: Boolean(localStorage.getItem("user"))
 };
 
 const authSlice = createSlice({
@@ -19,8 +19,15 @@ const authSlice = createSlice({
             state.isAuth = false;
             localStorage.removeItem("user");
         },
+        setUser(state, action) {
+            // Обновляем только указанные поля пользователя
+            if (state.user) {
+                state.user = { ...state.user, ...action.payload };
+                localStorage.setItem("user", JSON.stringify(state.user));
+            }
+        },
     },
 });
 
-export const { login, logout } = authSlice.actions;
+export const { login, logout, setUser } = authSlice.actions;
 export default authSlice.reducer;

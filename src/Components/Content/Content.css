@@ -53,6 +53,7 @@ body.dark .content_block {
     transition: opacity 0.3s ease;
     padding: 20px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .content_description-text {

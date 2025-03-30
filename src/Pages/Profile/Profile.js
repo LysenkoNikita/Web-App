@@ -1,44 +1,57 @@
 import React, { useState } from "react";
-import "./Profile.css";
+import {useDispatch} from "react-redux";
 
-export const Profile = ({ user, setUser }) => {
+import {logout, setUser} from "../../Components/Slices/AuthSlice";
+
+import "./Profile.css";
+import axios from "axios";
+
+export const Profile = ({user}) => {
+    const dispatch = useDispatch();
     const [editMode, setEditMode] = useState(false);
     const [newUsername, setNewUsername] = useState(user.username);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [deletePassword, setDeletePassword] = useState("");
 
-    const handleUpdateUsername = () => {
+    const handleUpdateUsername = async () => {
         if (newUsername.trim() === "") {
             alert("Имя пользователя не может быть пустым");
             return;
         }
-        setUser({ ...user, username: newUsername });
         setEditMode(false);
+        await axios.put("http://127.0.0.1:8000/username", {"id": user.id, "name": newUsername})
+        dispatch(setUser({username: newUsername}));
         alert("Имя пользователя успешно изменено");
     };
 
-    const handleUpdatePassword = () => {
-        if (oldPassword !== user.password) {
-            alert("Неверный старый пароль");
+    const handleUpdatePassword = async () => {
+        if (oldPassword.trim() === "") {
+            alert("Введите старый пароль");
             return;
         }
         if (newPassword.trim() === "") {
             alert("Новый пароль не может быть пустым");
             return;
         }
-        setUser({ ...user, password: newPassword });
+        await axios.put("http://127.0.0.1:8000/password", {"id": user.id, "newPassword": newPassword, "oldPassword": oldPassword})
         setOldPassword("");
         setNewPassword("");
         alert("Пароль успешно изменен");
     };
 
-    const handleDeleteAccount = () => {
-        if (deletePassword !== user.password) {
-            alert("Неверный пароль");
+    const handleDeleteAccount = async () => {
+        if (deletePassword.trim() === "") {
+            alert("Введите старый пароль");
             return;
         }
+        await axios.delete("http://127.0.0.1:8000/user", {
+            data:{
+                "id": user.id,
+                "password": deletePassword
+            }})
         setUser(null);
+        dispatch(logout());
         alert("Аккаунт успешно удален");
     };
 

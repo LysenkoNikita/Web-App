@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import "./CreateGame.css";
 import axios from "axios";
+
+import "./CreateGame.css";
+import {useNavigate} from "react-router-dom";
 
 export const CreateGame = () => {
     const [title, setTitle] = useState("");
@@ -10,7 +12,9 @@ export const CreateGame = () => {
     const [description, setDescription] = useState("");
     const [link, setLink] = useState("");
     const [image, setImage] = useState(null);
+    const [screen, setScreen] = useState(null);
     const [previewImage, setPreviewImage] = useState(null);
+    const navigate = useNavigate();
 
     const URLPage = " http://127.0.0.1:8000";
 
@@ -19,6 +23,17 @@ export const CreateGame = () => {
         if (file) {
             setImage(file);
             setPreviewImage(URL.createObjectURL(file)); // Создаем временный URL для предпросмотра
+        }
+    };
+
+    const handleScreenShotsChange = (e) => {
+        const files = e.target.files;
+        const file_array = []
+        for (let i = 0; i < files.length; i++) {
+            file_array.push(files[i]);
+        }
+        if (file_array) {
+            setScreen(file_array);
         }
     };
 
@@ -31,12 +46,16 @@ export const CreateGame = () => {
         formData.append('description', description);
         formData.append('link', link);
         formData.append('image', image);
+
+        for (let i = 0; i < screen.length; i++) {
+            formData.append('screens', screen[i]);  // Note: 'screens' matches backend parameter
+        }
         try{
-            const res = await axios.post(URLPage + "/createGame", formData, {
+            await axios.post(URLPage + "/createGame", formData, {
                 headers: {
                 "Content-Type": "multipart/form-data",
             }});
-            console.log(res);
+            navigate("/home");
         }
         catch(err){
             alert(err.response.data.message);
@@ -88,7 +107,7 @@ export const CreateGame = () => {
                         className="input_field"
                     />
                     <input
-                        type="number"
+                        type="date"
                         placeholder="Год выпуска"
                         value={year}
                         onChange={(e) => setYear(e.target.value)}
@@ -118,6 +137,24 @@ export const CreateGame = () => {
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     className="input_field"
+                />
+            </div>
+            <div className="screen_container">
+                {screen ? (
+                    <div className="images-grid">
+                        {screen.map((image, index) => (
+                            <img key={index} src={URL.createObjectURL(image)} alt={`Preview ${index}`} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="screen_placeholder">Выберите скриншоты игры</div>
+                )}
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleScreenShotsChange}
+                    className="image_input"
+                    multiple={true}
                 />
             </div>
             <div className="buttons_container">

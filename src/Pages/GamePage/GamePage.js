@@ -1,18 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+
+import {Comments} from "../../Components/Comments/Comments";
+
 import './GamePage.css';
 
 export const GamePage = () => {
     const { id } = useParams();
     const [game, setGame] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    const nextSlide = () => {
+        setCurrentSlide((prev) =>
+            prev === game.screen.length - 1 ? 0 : prev + 1
+        );
+    };
+
+    const prevSlide = () => {
+        setCurrentSlide((prev) =>
+            prev === 0 ? game.screen.length - 1 : prev - 1
+        );
+    };
 
     useEffect(() => {
         const fetchGame = async () => {
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/games/${id}`);
-                setGame(response.data);
+                const gameData = response.data;
+                gameData.screen = gameData.screen.split(" "); // Split the screen string here
+                setGame(gameData);
             } catch (error) {
                 console.error("Error fetching game:", error);
             } finally {
@@ -21,7 +39,7 @@ export const GamePage = () => {
         };
 
         fetchGame();
-    }, [id]);
+    }, [id]); // Only id is needed as a dependency
 
     if (loading) return <div>Загрузка...</div>;
     if (!game) return <div>Игра не найдена</div>;
@@ -77,20 +95,38 @@ export const GamePage = () => {
                 <h2>Описание</h2>
                 <p>{game.description}</p>
             </div>
+            {game.screen.length > 0 ? (
+                <div className="game-screenshots">
+                    <h2>Скриншоты</h2>
+                    <div className="carousel-container">
+                        <button
+                            className="carousel-button prev"
+                            onClick={prevSlide}
+                        >
+                            &lt;
+                        </button>
 
-            <div className="game-screenshots">
-                <h2>Скриншоты</h2>
-                <div className="screenshots-grid">
-                    {game.screenshots?.map((screenshot, index) => (
-                        <img
-                            key={index}
-                            src={screenshot.startsWith('data:image') ? screenshot : `data:image/jpeg;base64,${screenshot}`}
-                            alt={`Скриншот ${index + 1}`}
-                            className="screenshot"
-                        />
-                    ))}
+                        <div className="carousel-slide">
+                            <img
+                                src={game.screen[currentSlide]}
+                                alt={`Скриншот ${currentSlide + 1}`}
+                                className="screenshot"
+                            />
+                            <div className="slide-counter">
+                                {currentSlide + 1} / {game.screen.length}
+                            </div>
+                        </div>
+
+                        <button
+                            className="carousel-button next"
+                            onClick={nextSlide}
+                        >
+                            &gt;
+                        </button>
+                    </div>
                 </div>
-            </div>
+            ): null}
+            <Comments gameId={game.id} />
         </div>
     );
 };

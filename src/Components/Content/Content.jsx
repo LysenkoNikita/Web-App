@@ -16,7 +16,10 @@ export const Content = ({ Game }) => {
                     />
                     <div className="content_description">
                         <p className="content_description-text">
-                            {Game.description}
+                            {Game.description.length > 300
+                                ? Game.description.slice(0, 300) + "..."
+                                : Game.description
+                            }
                         </p>
                     </div>
                 </div>

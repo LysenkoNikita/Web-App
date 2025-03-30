@@ -9,14 +9,16 @@ import { Content } from "../../Components/Content/Content";
 import "./Home.css";
 
 export const Home = () => {
+    const {user} = useSelector((state) => state.auth);
     const menuOpen = useSelector((state) => state.menu.menuOpen);
+
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
 
-    const gamesPerPage = 10;
+    const gamesPerPage = 8;
 
     const fetchGames = async (page) => {
         setLoading(true);
@@ -54,9 +56,14 @@ export const Home = () => {
 
             <div className="content-wrapper">
                 <div className={`games_container ${menuOpen ? "shifted" : ""}`}>
-                    <div className={"addGame"} onClick={() => {navigate("/createGame")}}>
-                        Добавить игру
-                    </div>
+                    {user?.isAdmin || user?.isEditor ? (
+                        <div
+                            className="addGame"
+                            onClick={() => navigate("/createGame")}
+                        >
+                            Добавить игру
+                        </div>
+                    ) : null}
                     <div className="games_container_block">
                         {loading ? (
                             <div>Загрузка...</div>
@@ -67,8 +74,6 @@ export const Home = () => {
                         )}
                     </div>
                 </div>
-
-                {/* Пагинация внизу страницы */}
 
             </div>
             <div className="pagination-container">
