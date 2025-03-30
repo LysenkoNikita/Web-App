@@ -108,7 +108,7 @@
     margin-bottom: 1.5rem;
     border-bottom: 2px solid #3498db;
     padding-bottom: 0.5rem;
-    display: inline-block;
+    display: flex;
 }
 
 .carousel-container {
@@ -127,7 +127,6 @@
 
 .carousel-slide img {
     max-width: 100%;
-    max-height: 400px;
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
