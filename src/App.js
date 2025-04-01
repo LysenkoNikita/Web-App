@@ -31,7 +31,7 @@ const Routers = () => {
     const ProtectedRoute = ({ allowedRoles }) => {
 
         if (!user || !allowedRoles.some(role => user[role] === 1))
-            return <Navigate to="/home" replace />; // Перенаправляем на логин или другую страницу
+            return <Navigate to="/home" replace />;
 
         return <Outlet />;
     };

@@ -3,14 +3,12 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import { Menu } from "../../Components/Menu/Menu";
 import { Content } from "../../Components/Content/Content";
 
 import "./Home.css";
 
 export const Home = () => {
     const {user} = useSelector((state) => state.auth);
-    const menuOpen = useSelector((state) => state.menu.menuOpen);
 
     const navigate = useNavigate();
     const [games, setGames] = useState([]);
@@ -50,12 +48,8 @@ export const Home = () => {
 
     return (
         <div className="home_page">
-            <div className={`menu_container ${menuOpen ? "open" : ""}`}>
-                <Menu />
-            </div>
-
             <div className="content-wrapper">
-                <div className={`games_container ${menuOpen ? "shifted" : ""}`}>
+                <div className={`games_container`}>
                     {user?.isAdmin || user?.isEditor ? (
                         <div
                             className="addGame"

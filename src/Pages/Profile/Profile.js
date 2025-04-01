@@ -1,117 +1,235 @@
 import React, { useState } from "react";
-import {useDispatch} from "react-redux";
+import { useDispatch } from "react-redux";
 
-import {logout, setUser} from "../../Components/Slices/AuthSlice";
-
-import "./Profile.css";
+import { logout, setUser } from "../../Components/Slices/AuthSlice";
 import axios from "axios";
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    TextField,
+    Typography,
+    Alert,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+} from "@mui/material";
 
-export const Profile = ({user}) => {
+
+export const Profile = ({ user }) => {
     const dispatch = useDispatch();
     const [editMode, setEditMode] = useState(false);
     const [newUsername, setNewUsername] = useState(user.username);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [deletePassword, setDeletePassword] = useState("");
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
     const handleUpdateUsername = async () => {
         if (newUsername.trim() === "") {
-            alert("Имя пользователя не может быть пустым");
+            setError("Имя пользователя не может быть пустым");
             return;
         }
-        setEditMode(false);
-        await axios.put("http://127.0.0.1:8000/username", {"id": user.id, "name": newUsername})
-        dispatch(setUser({username: newUsername}));
-        alert("Имя пользователя успешно изменено");
+        try {
+            await axios.put("http://127.0.0.1:8000/username", {
+                id: user.id,
+                name: newUsername,
+            });
+            dispatch(setUser({ username: newUsername }));
+            setEditMode(false);
+            setSuccess("Имя пользователя успешно изменено");
+            setTimeout(() => setSuccess(""), 3000);
+        } catch (err) {
+            setError("Ошибка при изменении имени пользователя");
+        }
     };
 
     const handleUpdatePassword = async () => {
         if (oldPassword.trim() === "") {
-            alert("Введите старый пароль");
+            setError("Введите старый пароль");
             return;
         }
         if (newPassword.trim() === "") {
-            alert("Новый пароль не может быть пустым");
+            setError("Новый пароль не может быть пустым");
             return;
         }
-        await axios.put("http://127.0.0.1:8000/password", {"id": user.id, "newPassword": newPassword, "oldPassword": oldPassword})
-        setOldPassword("");
-        setNewPassword("");
-        alert("Пароль успешно изменен");
+        try {
+            await axios.put("http://127.0.0.1:8000/password", {
+                id: user.id,
+                newPassword: newPassword,
+                oldPassword: oldPassword,
+            });
+            setOldPassword("");
+            setNewPassword("");
+            setSuccess("Пароль успешно изменен");
+            setTimeout(() => setSuccess(""), 3000);
+        } catch (err) {
+            setError("Ошибка при изменении пароля");
+        }
     };
 
     const handleDeleteAccount = async () => {
         if (deletePassword.trim() === "") {
-            alert("Введите старый пароль");
+            setError("Введите пароль для подтверждения");
             return;
         }
-        await axios.delete("http://127.0.0.1:8000/user", {
-            data:{
-                "id": user.id,
-                "password": deletePassword
-            }})
-        setUser(null);
-        dispatch(logout());
-        alert("Аккаунт успешно удален");
+        try {
+            await axios.delete("http://127.0.0.1:8000/user", {
+                data: {
+                    id: user.id,
+                    password: deletePassword,
+                },
+            });
+            setUser(null);
+            dispatch(logout());
+            setSuccess("Аккаунт успешно удален");
+        } catch (err) {
+            setError("Ошибка при удалении аккаунта");
+        }
     };
 
     if (!user) {
-        return <div className="profile-page">Аккаунт удален</div>;
+        return (
+            <Box sx={{ p: 3 }}>
+                <Typography variant="h6">Аккаунт удален</Typography>
+            </Box>
+        );
     }
 
     return (
-        <div className="profile-page">
-            <div className="profile-section">
-                <h2>Информация о пользователе</h2>
-                <p>
-                    <strong>Имя пользователя:</strong> {user.username}
-                </p>
-                <p>
-                    <strong>Email:</strong> {user.email}
-                </p>
-                <button onClick={() => setEditMode(!editMode)}>
-                    {editMode ? "Отменить" : "Изменить имя пользователя"}
-                </button>
-                {editMode && (
-                    <div className="edit-section">
-                        <input
-                            type="text"
-                            value={newUsername}
-                            onChange={(e) => setNewUsername(e.target.value)}
-                            placeholder="Новое имя пользователя"
-                        />
-                        <button onClick={handleUpdateUsername}>Сохранить</button>
-                    </div>
-                )}
-            </div>
+        <Box sx={{ maxWidth: 600, minHeight: 800, mx: "auto", p: 3 }}>
+            {error && (
+                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
+                    {error}
+                </Alert>
+            )}
+            {success && (
+                <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess("")}>
+                    {success}
+                </Alert>
+            )}
 
-            <div className="password-section">
-                <h2>Смена пароля</h2>
-                <input
-                    type="password"
-                    value={oldPassword}
-                    onChange={(e) => setOldPassword(e.target.value)}
-                    placeholder="Старый пароль"
-                />
-                <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Новый пароль"
-                />
-                <button onClick={handleUpdatePassword}>Изменить пароль</button>
-            </div>
+            <Card sx={{ mb: 3 }}>
+                <CardContent>
+                    <Typography variant={"h6"} gutterBottom>
+                        <strong>Информация о пользователе</strong>
+                    </Typography>
+                    <Typography>
+                        <strong>Имя пользователя:</strong> {user.username}
+                    </Typography>
+                    <Typography>
+                        <strong>Email:</strong> {user.email}
+                    </Typography>
 
-            <div className="delete-section">
-                <h2>Удаление аккаунта</h2>
-                <input
-                    type="password"
-                    value={deletePassword}
-                    onChange={(e) => setDeletePassword(e.target.value)}
-                    placeholder="Введите пароль для подтверждения"
-                />
-                <button onClick={handleDeleteAccount}>Удалить аккаунт</button>
-            </div>
-        </div>
+                    <Box sx={{ mt: 2 }}>
+                        <Button
+                            variant="contained"
+                            onClick={() => setEditMode(!editMode)}
+                            sx={{ mr: 2 }}
+                        >
+                            {editMode ? "Отменить" : "Изменить имя пользователя"}
+                        </Button>
+
+                        {editMode && (
+                            <Box sx={{ mt: 2 }}>
+                                <TextField
+                                    fullWidth
+                                    label="Новое имя пользователя"
+                                    value={newUsername}
+                                    onChange={(e) => setNewUsername(e.target.value)}
+                                    sx={{ mb: 2 }}
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    onClick={handleUpdateUsername}
+                                >
+                                    Сохранить
+                                </Button>
+                            </Box>
+                        )}
+                    </Box>
+                </CardContent>
+            </Card>
+
+            <Card sx={{ mb: 3 }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                        Смена пароля
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        type="password"
+                        label="Старый пароль"
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <TextField
+                        fullWidth
+                        type="password"
+                        label="Новый пароль"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <Button variant="contained" onClick={handleUpdatePassword}>
+                        Изменить пароль
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card sx={{ borderColor: "error.main" }}>
+                <CardContent>
+                    <Typography variant="h6" gutterBottom color="error">
+                        Удаление аккаунта
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        type="password"
+                        label="Введите пароль для подтверждения"
+                        value={deletePassword}
+                        onChange={(e) => setDeletePassword(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => setOpenDeleteDialog(true)}
+                    >
+                        Удалить аккаунт
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Dialog
+                open={openDeleteDialog}
+                onClose={() => setOpenDeleteDialog(false)}
+            >
+                <DialogTitle>Подтверждение удаления аккаунта</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя
+                        отменить.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDeleteDialog(false)}>Отмена</Button>
+                    <Button
+                        onClick={() => {
+                            setOpenDeleteDialog(false);
+                            handleDeleteAccount();
+                        }}
+                        color="error"
+                    >
+                        Удалить
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Box>
     );
 };

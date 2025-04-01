@@ -1,93 +1,123 @@
-body.light .theme_toggle{
+/* Общие стили для темы */
+.theme_toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 8px 0;
+    margin-bottom: 8px;
+    border-bottom: 1px solid;
+}
+
+body.light .theme_toggle {
     background-color: #ffffff;
     color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    border-bottom-color: #e0e0e0;
 }
 
-body.dark .theme_toggle{
+body.dark .theme_toggle {
     background-color: #333;
     color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    border-bottom-color: #444;
 }
 
-body.light .icon{
+/* Иконка темы */
+.icon {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+body.light .icon {
     filter: invert(1);
-    width: 30px;
-    height: 30px;
 }
 
-body.dark .icon{
-    width: 30px;
-    height: 30px;
+.icon:hover {
+    transform: scale(1.1);
 }
 
+/* Контейнер профиля */
 .profile {
     position: relative;
     cursor: pointer;
     display: inline-block;
 }
 
+/* Выпадающее меню - общие стили */
+.dropdown_menu {
+    position: absolute;
+    right: 0; /* Изменено с left: 0 для выравнивания по правому краю */
+    top: 30px;
+    min-width: 200px; /* Фиксированная ширина вместо 100% */
+    box-sizing: border-box;
+    padding: 10px;
+    z-index: 1000;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+/* Стили для светлой темы */
 body.light .dropdown_menu {
     background-color: #ffffff;
     color: #333;
-    align-content: center;
-    position: absolute;
-    cursor: default;
-    top: 100%;
-    left: 0;
-    border: 1px solid #000000;
-    padding: 10px;
-    z-index: 1000;
-    min-width: 100%;
-    box-sizing: border-box;
-    visibility: hidden; /* Скрываем элемент, но он остается в потоке документа */
-    opacity: 0; /* Делаем элемент полностью прозрачным */
-    transition: opacity 0.4s ease, visibility 0.4s ease;
+    border: 1px solid #e0e0e0;
 }
 
+/* Стили для темной темы */
 body.dark .dropdown_menu {
     background-color: #333;
     color: #ffffff;
-    align-content: center;
-    position: absolute;
-    cursor: default;
-    top: 100%;
-    left: 0;
-    border: 1px solid #ffffff;
-    padding: 10px;
-    z-index: 1000;
-    min-width: 100%;
-    box-sizing: border-box;
-    visibility: hidden; /* Скрываем элемент, но он остается в потоке документа */
-    opacity: 0; /* Делаем элемент полностью прозрачным */
-    transition: opacity 0.4s ease, visibility 0.4s ease;
+    border: 1px solid #555;
 }
 
+/* Показываем меню при наведении */
 .profile:hover .dropdown_menu {
     visibility: visible;
-    align-content: center;
     opacity: 1;
 }
 
+/* Стили для кнопок в меню */
 .dropdown_menu button {
     display: block;
     width: 100%;
-    text-align: center;
+    text-align: left;
     margin: 5px 0;
-    padding: 8px;
-    box-sizing: border-box;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.btn_profile{
-    cursor: pointer;
+body.light .dropdown_menu button {
+    color: #333;
 }
 
-.btn_logout{
-    cursor: pointer;
+body.dark .dropdown_menu button {
+    color: #fff;
+}
+
+body.light .dropdown_menu button:hover {
+    background-color: #f0f0f0;
+}
+
+body.dark .dropdown_menu button:hover {
+    background-color: #444;
+}
+
+.btn_logout {
+    color: #ff4d4f !important;
+}
+
+body.light .btn_logout:hover {
+    background-color: rgba(255, 77, 79, 0.1) !important;
+}
+
+body.dark .btn_logout:hover {
+    background-color: rgba(255, 77, 79, 0.2) !important;
 }
