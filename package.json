@@ -19,6 +19,11 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.2.0",
     "react-scripts": "5.0.1",
+    "react-table": "^7.8.0",
+    "react-table-sticky": "^1.1.3",
+    "react-virtual": "^2.10.4",
+    "react-virtualized-auto-sizer": "^1.0.26",
+    "react-window": "^1.8.11",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

@@ -11,6 +11,7 @@ import {Contacts} from "./Pages/Contacts";
 import {Feedback} from "./Pages/Feedback/Feedback";
 import {CreateGame} from "./Pages/CreateGame/CreateGame";
 import {GamePage} from "./Pages/GamePage/GamePage";
+import AdminUsers from "./Pages/AdminUsers/AdminUsers";
 
 import "./App.css"
 import {login} from "./Components/Slices/AuthSlice";
@@ -53,6 +54,9 @@ const Routers = () => {
                 <Route path="profile" element={isAuth ? (<Profile user={user}/>): (<Home />)} />
                 <Route element={<ProtectedRoute allowedRoles={["isAdmin", "isEditor"]}/>}>
                     <Route path={"createGame"} element={<CreateGame />} />
+                </Route>
+                <Route element={<ProtectedRoute allowedRoles={["isAdmin"]}/>}>
+                    <Route path={"userspanel"} element={<AdminUsers />} />
                 </Route>
             </Route>
             <Route path="/auth" element={isAuth ? (<Navigate to={location.state?.from || "/home"} replace />) : (<Auth />)} />

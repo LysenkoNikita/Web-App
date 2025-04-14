@@ -26,6 +26,9 @@ export const ProfileMenu = () => {
                     <img className="icon" src={icon} onClick={toggleTheme} alt="Сменить тему" />
                 </div>
                 <Button className={"btn_profile"} onClick={() => navigate("/profile")}>Профиль</Button>
+                {user?.isAdmin ? (
+                    <Button className={"btn_profile"} onClick={() => navigate("/userspanel")}>Панель администрирования</Button>
+                ): null}
                 <Button className={"btn_logout"} onClick={() => dispatch(logout())}>Выйти</Button>
             </div>
         </div>
