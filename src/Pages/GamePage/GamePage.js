@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 
-import {Comments} from "../../Components/Comments/Comments";
+import { useGetGameByIdQuery } from '../../Components/api/gamesApi';
+import { Comments } from "../../Components/Comments/Comments";
 
 import './GamePage.css';
 
-export const GamePage = () => {
+const GamePage = () => {
     const { id } = useParams();
-    const [game, setGame] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [currentSlide, setCurrentSlide] = useState(0);
+
+    const {
+        data: game,
+        isLoading,
+        isError
+    } = useGetGameByIdQuery(id);
 
     const nextSlide = () => {
         setCurrentSlide((prev) =>
@@ -24,25 +28,8 @@ export const GamePage = () => {
         );
     };
 
-    useEffect(() => {
-        const fetchGame = async () => {
-            try {
-                const response = await axios.get(`http://127.0.0.1:8000/games/${id}`);
-                const gameData = response.data;
-                gameData.screen = gameData.screen.split(" "); // Split the screen string here
-                setGame(gameData);
-            } catch (error) {
-                console.error("Error fetching game:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchGame();
-    }, [id]); // Only id is needed as a dependency
-
-    if (loading) return <div>Загрузка...</div>;
-    if (!game) return <div>Игра не найдена</div>;
+    if (isLoading) return <div>Загрузка...</div>;
+    if (isError || !game) return <div>Игра не найдена</div>;
 
     return (
         <div className="game-page">
@@ -95,7 +82,8 @@ export const GamePage = () => {
                 <h2>Описание</h2>
                 <p>{game.description}</p>
             </div>
-            {game.screen.length > 0 ? (
+
+            {game.screen.length > 0 && (
                 <div className="game-screenshots">
                     <h2>Скриншоты</h2>
                     <div className="carousel-container">
@@ -125,8 +113,11 @@ export const GamePage = () => {
                         </button>
                     </div>
                 </div>
-            ): null}
-            <Comments gameId={game.id} />
+            )}
+
+            <Comments gameId={id} />
         </div>
     );
 };
+
+export default GamePage;

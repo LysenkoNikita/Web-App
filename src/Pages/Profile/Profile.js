@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-
+import {
+    useUpdateUsernameMutation,
+    useUpdatePasswordMutation,
+    useDeleteAccountMutation
+} from "../../Components/api/profileApi";
 import { logout, setUser } from "../../Components/Slices/AuthSlice";
-import axios from "axios";
+import {ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
     Box,
     Button,
@@ -10,85 +15,122 @@ import {
     CardContent,
     TextField,
     Typography,
-    Alert,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
+    CircularProgress
 } from "@mui/material";
 
-
-export const Profile = ({ user }) => {
+const Profile = ({ user }) => {
     const dispatch = useDispatch();
     const [editMode, setEditMode] = useState(false);
     const [newUsername, setNewUsername] = useState(user.username);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [deletePassword, setDeletePassword] = useState("");
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+    const [
+        updateUsername,
+        { isLoading: isUpdatingUsername }
+    ] = useUpdateUsernameMutation();
+
+    const [
+        updatePassword,
+        { isLoading: isUpdatingPassword }
+    ] = useUpdatePasswordMutation();
+
+    const [
+        deleteAccount,
+        { isLoading: isDeletingAccount }
+    ] = useDeleteAccountMutation();
+
+    const showSuccess = (message) => {
+        toast.success(message, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+    };
+
+    const showError = (message) => {
+        toast.error(message, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+    };
 
     const handleUpdateUsername = async () => {
         if (newUsername.trim() === "") {
-            setError("Имя пользователя не может быть пустым");
+            showError("Имя пользователя не может быть пустым");
             return;
         }
+
         try {
-            await axios.put("http://127.0.0.1:8000/username", {
+            await updateUsername({
                 id: user.id,
-                name: newUsername,
-            });
+                name: newUsername
+            }).unwrap();
+
             dispatch(setUser({ username: newUsername }));
             setEditMode(false);
-            setSuccess("Имя пользователя успешно изменено");
-            setTimeout(() => setSuccess(""), 3000);
+            showSuccess("Имя пользователя успешно изменено");
         } catch (err) {
-            setError("Ошибка при изменении имени пользователя");
+            showError(err.data?.message || "Ошибка при изменении имени пользователя");
         }
     };
 
     const handleUpdatePassword = async () => {
         if (oldPassword.trim() === "") {
-            setError("Введите старый пароль");
+            showError("Введите старый пароль");
             return;
         }
         if (newPassword.trim() === "") {
-            setError("Новый пароль не может быть пустым");
+            showError("Новый пароль не может быть пустым");
             return;
         }
+
         try {
-            await axios.put("http://127.0.0.1:8000/password", {
+            await updatePassword({
                 id: user.id,
-                newPassword: newPassword,
-                oldPassword: oldPassword,
-            });
+                newPassword,
+                oldPassword
+            }).unwrap();
+
             setOldPassword("");
             setNewPassword("");
-            setSuccess("Пароль успешно изменен");
-            setTimeout(() => setSuccess(""), 3000);
+            showSuccess("Пароль успешно изменен");
         } catch (err) {
-            setError("Ошибка при изменении пароля");
+            showError(err.data?.message || "Ошибка при изменении пароля");
         }
     };
 
     const handleDeleteAccount = async () => {
         if (deletePassword.trim() === "") {
-            setError("Введите пароль для подтверждения");
+            showError("Введите пароль для подтверждения");
             return;
         }
+
         try {
-            await axios.delete("http://127.0.0.1:8000/user", {
-                data: {
-                    id: user.id,
-                    password: deletePassword,
-                },
-            });
-            setUser(null);
+            await deleteAccount({
+                id: user.id,
+                password: deletePassword
+            }).unwrap();
+
             dispatch(logout());
-            setSuccess("Аккаунт успешно удален");
+            showSuccess("Аккаунт успешно удален");
         } catch (err) {
-            setError("Ошибка при удалении аккаунта");
+            showError(err.data?.message || "Ошибка при удалении аккаунта");
         }
     };
 
@@ -102,17 +144,18 @@ export const Profile = ({ user }) => {
 
     return (
         <Box sx={{ maxWidth: 600, minHeight: 800, mx: "auto", p: 3 }}>
-            {error && (
-                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError("")}>
-                    {error}
-                </Alert>
-            )}
-            {success && (
-                <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess("")}>
-                    {success}
-                </Alert>
-            )}
-
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
             <Card sx={{ mb: 3 }}>
                 <CardContent>
                     <Typography variant={"h6"} gutterBottom>
@@ -130,6 +173,7 @@ export const Profile = ({ user }) => {
                             variant="contained"
                             onClick={() => setEditMode(!editMode)}
                             sx={{ mr: 2 }}
+                            disabled={isUpdatingUsername}
                         >
                             {editMode ? "Отменить" : "Изменить имя пользователя"}
                         </Button>
@@ -142,13 +186,26 @@ export const Profile = ({ user }) => {
                                     value={newUsername}
                                     onChange={(e) => setNewUsername(e.target.value)}
                                     sx={{ mb: 2 }}
+                                    disabled={isUpdatingUsername}
                                 />
                                 <Button
                                     variant="contained"
                                     color="success"
                                     onClick={handleUpdateUsername}
+                                    disabled={isUpdatingUsername}
                                 >
-                                    Сохранить
+                                    {isUpdatingUsername ? (
+                                        <>
+                                            <CircularProgress
+                                                size={24}
+                                                sx={{
+                                                    color: 'inherit',
+                                                    marginRight: '8px'
+                                                }}
+                                            />
+                                            Сохранение...
+                                        </>
+                                    ) : "Сохранить"}
                                 </Button>
                             </Box>
                         )}
@@ -168,6 +225,7 @@ export const Profile = ({ user }) => {
                         value={oldPassword}
                         onChange={(e) => setOldPassword(e.target.value)}
                         sx={{ mb: 2 }}
+                        disabled={isUpdatingPassword}
                     />
                     <TextField
                         fullWidth
@@ -176,9 +234,25 @@ export const Profile = ({ user }) => {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         sx={{ mb: 2 }}
+                        disabled={isUpdatingPassword}
                     />
-                    <Button variant="contained" onClick={handleUpdatePassword}>
-                        Изменить пароль
+                    <Button
+                        variant="contained"
+                        onClick={handleUpdatePassword}
+                        disabled={isUpdatingPassword}
+                    >
+                        {isUpdatingPassword ? (
+                            <>
+                                <CircularProgress
+                                    size={24}
+                                    sx={{
+                                        color: 'inherit',
+                                        marginRight: '8px'
+                                    }}
+                                />
+                                Обновление...
+                            </>
+                        ) : "Изменить пароль"}
                     </Button>
                 </CardContent>
             </Card>
@@ -195,11 +269,13 @@ export const Profile = ({ user }) => {
                         value={deletePassword}
                         onChange={(e) => setDeletePassword(e.target.value)}
                         sx={{ mb: 2 }}
+                        disabled={isDeletingAccount}
                     />
                     <Button
                         variant="contained"
                         color="error"
                         onClick={() => setOpenDeleteDialog(true)}
+                        disabled={isDeletingAccount}
                     >
                         Удалить аккаунт
                     </Button>
@@ -218,18 +294,37 @@ export const Profile = ({ user }) => {
                     </Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenDeleteDialog(false)}>Отмена</Button>
+                    <Button
+                        onClick={() => setOpenDeleteDialog(false)}
+                        disabled={isDeletingAccount}
+                    >
+                        Отмена
+                    </Button>
                     <Button
                         onClick={() => {
                             setOpenDeleteDialog(false);
                             handleDeleteAccount();
                         }}
                         color="error"
+                        disabled={isDeletingAccount}
                     >
-                        Удалить
+                        {isDeletingAccount ? (
+                            <>
+                                <CircularProgress
+                                    size={24}
+                                    sx={{
+                                        color: 'inherit',
+                                        marginRight: '8px'
+                                    }}
+                                />
+                                Удаление...
+                            </>
+                        ) : "Удалить"}
                     </Button>
                 </DialogActions>
             </Dialog>
         </Box>
     );
 };
+
+export default Profile;

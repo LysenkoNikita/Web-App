@@ -1,44 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
+import { useGetHomeGamesQuery } from "../../Components/api/homeApi";
 import { Content } from "../../Components/Content/Content";
 
 import "./Home.css";
 
-export const Home = () => {
-    const {user} = useSelector((state) => state.auth);
-
+const Home = () => {
+    const { user } = useSelector((state) => state.auth);
     const navigate = useNavigate();
-    const [games, setGames] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [loading, setLoading] = useState(false);
-
     const gamesPerPage = 8;
 
-    const fetchGames = async (page) => {
-        setLoading(true);
-        try {
-            const response = await axios.get(`http://127.0.0.1:8000/home/`, {
-                params: {
-                    page: page,
-                    per_page: gamesPerPage
-                }
-            });
-            setGames(response.data.games);
-            setTotalPages(response.data.totalPages);
-        } catch (error) {
-            console.error("Error fetching games:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchGames(currentPage);
-    }, [currentPage]);
+    const {
+        data: { games = [], totalPages = 1 } = {},
+        isLoading,
+        isFetching
+    } = useGetHomeGamesQuery({ page: currentPage, per_page: gamesPerPage });
 
     const handlePageChange = (newPage) => {
         if (newPage > 0 && newPage <= totalPages) {
@@ -59,33 +38,32 @@ export const Home = () => {
                         </div>
                     ) : null}
                     <div className="games_container_block">
-                        {loading ? (
+                        {(isLoading || isFetching) ? (
                             <div>Загрузка...</div>
                         ) : (
                             games.map((game, index) => (
-                                <Content key={index} Game={game} />
+                                <Content key={`${game.id}-${index}`} Game={game} />
                             ))
                         )}
                     </div>
                 </div>
-
             </div>
             <div className="pagination-container">
                 <div className="pagination">
                     <button
                         onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 1}
+                        disabled={currentPage === 1 || isLoading}
                     >
                         Назад
                     </button>
 
                     <span>
-                            Страница {currentPage} из {totalPages}
-                        </span>
+                        Страница {currentPage} из {totalPages}
+                    </span>
 
                     <button
                         onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages}
+                        disabled={currentPage === totalPages || isLoading}
                     >
                         Вперед
                     </button>
@@ -94,3 +72,5 @@ export const Home = () => {
         </div>
     );
 };
+
+export default Home;

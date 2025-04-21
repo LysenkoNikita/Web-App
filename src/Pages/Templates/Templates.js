@@ -6,7 +6,7 @@ import Footer from "../../Components/Footer/Footer";
 
 import "./Templates.css"
 
-export const Templates = () => {
+const Templates = () => {
     return (
         <div className="MainBody">
             <Header />
@@ -15,3 +15,5 @@ export const Templates = () => {
         </div>
     );
 }
+
+export default Templates;

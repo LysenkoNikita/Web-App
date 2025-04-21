@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
+import { useCreateGameMutation } from "../../Components/api/createrApi";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ClipLoader } from "react-spinners";
 import "./CreateGame.css";
-import {useNavigate} from "react-router-dom";
 
-export const CreateGame = () => {
+const CreateGame = () => {
     const [title, setTitle] = useState("");
     const [genre, setGenre] = useState("");
     const [studio, setStudio] = useState("");
@@ -16,28 +18,30 @@ export const CreateGame = () => {
     const [previewImage, setPreviewImage] = useState(null);
     const navigate = useNavigate();
 
-    const URLPage = " http://127.0.0.1:8000";
+    const [createGame, { isLoading }] = useCreateGameMutation();
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             setImage(file);
-            setPreviewImage(URL.createObjectURL(file)); // Создаем временный URL для предпросмотра
+            setPreviewImage(URL.createObjectURL(file));
         }
     };
 
     const handleScreenShotsChange = (e) => {
         const files = e.target.files;
-        const file_array = []
-        for (let i = 0; i < files.length; i++) {
-            file_array.push(files[i]);
-        }
-        if (file_array) {
-            setScreen(file_array);
+        const fileArray = Array.from(files);
+        if (fileArray.length > 0) {
+            setScreen(fileArray);
         }
     };
 
     const handleSave = async () => {
+        if (!title || !genre || !studio || !year || !description || !link || !image || !screen) {
+            toast.error("Пожалуйста, заполните все поля");
+            return;
+        }
+
         const formData = new FormData();
         formData.append('title', title);
         formData.append('genre', genre);
@@ -47,36 +51,55 @@ export const CreateGame = () => {
         formData.append('link', link);
         formData.append('image', image);
 
-        for (let i = 0; i < screen.length; i++) {
-            formData.append('screens', screen[i]);  // Note: 'screens' matches backend parameter
-        }
-        try{
-            await axios.post(URLPage + "/createGame", formData, {
-                headers: {
-                "Content-Type": "multipart/form-data",
-            }});
-            navigate("/home");
-        }
-        catch(err){
-            alert(err.response.data.message);
-        }
+        screen.forEach((file) => {
+            formData.append('screens', file);
+        });
 
+        try {
+            await createGame(formData).unwrap();
+            toast.success("Игра успешно создана!");
+            setTimeout(() => navigate("/home"), 1500);
+        } catch (err) {
+            toast.error(err.data?.message || "Ошибка при создании игры");
+        }
     };
 
     const handleCancel = () => {
+        if (title || genre || studio || year || description || link || image || screen) {
+            if (window.confirm("Вы уверены, что хотите отменить создание игры? Все данные будут потеряны.")) {
+                resetForm();
+                toast.info("Создание игры отменено");
+            }
+        }
+    };
+
+    const resetForm = () => {
         setTitle("");
         setGenre("");
-        setStudio("")
-        setYear("")
+        setStudio("");
+        setYear("");
         setDescription("");
         setLink("");
         setImage(null);
+        setScreen(null);
         setPreviewImage(null);
-        alert("Изменения отменены.");
     };
 
     return (
         <div className="createGame">
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
+
             <div className="info_container">
                 <div className="img_container">
                     {previewImage ? (
@@ -89,82 +112,113 @@ export const CreateGame = () => {
                         accept="image/*"
                         onChange={handleImageChange}
                         className="image_input"
+                        disabled={isLoading}
                     />
                 </div>
                 <div className="details_container">
                     <input
                         type="text"
-                        placeholder="Название игры"
+                        placeholder="Название игры*"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         className="input_field"
+                        disabled={isLoading}
                     />
                     <input
                         type="text"
-                        placeholder="Жанр"
+                        placeholder="Жанр*"
                         value={genre}
                         onChange={(e) => setGenre(e.target.value)}
                         className="input_field"
+                        disabled={isLoading}
                     />
                     <input
                         type="date"
-                        placeholder="Год выпуска"
+                        placeholder="Год выпуска*"
                         value={year}
                         onChange={(e) => setYear(e.target.value)}
                         className="input_field"
+                        disabled={isLoading}
                     />
                     <input
                         type="text"
-                        placeholder="Студия разработчик"
+                        placeholder="Студия разработчик*"
                         value={studio}
                         onChange={(e) => setStudio(e.target.value)}
                         className="input_field"
+                        disabled={isLoading}
                     />
                 </div>
             </div>
             <div className="description_container">
                 <textarea
-                    placeholder="Описание игры"
+                    placeholder="Описание игры*"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="description_input"
+                    disabled={isLoading}
                 />
             </div>
             <div>
                 <input
                     type="text"
-                    placeholder="Ссылка на игру"
+                    placeholder="Ссылка на игру*"
                     value={link}
                     onChange={(e) => setLink(e.target.value)}
                     className="input_field"
+                    disabled={isLoading}
                 />
             </div>
             <div className="screen_container">
                 {screen ? (
                     <div className="images-grid">
                         {screen.map((image, index) => (
-                            <img key={index} src={URL.createObjectURL(image)} alt={`Preview ${index}`} />
+                            <img
+                                key={index}
+                                src={URL.createObjectURL(image)}
+                                alt={`Preview ${index}`}
+                            />
                         ))}
                     </div>
                 ) : (
-                    <div className="screen_placeholder">Выберите скриншоты игры</div>
+                    <div className="screen_placeholder">Выберите скриншоты игры*</div>
                 )}
                 <input
                     type="file"
                     accept="image/*"
                     onChange={handleScreenShotsChange}
                     className="image_input"
-                    multiple={true}
+                    multiple
+                    disabled={isLoading}
                 />
             </div>
             <div className="buttons_container">
-            <button onClick={handleSave} className="save_button">
-                Сохранить
-            </button>
-            <button onClick={handleCancel} className="cancel_button">
-                Отменить
-            </button>
-        </div>
+                <button
+                    onClick={handleSave}
+                    className="save_button"
+                    disabled={isLoading}
+                >
+                    {isLoading ? (
+                        <>
+                            <ClipLoader
+                                color="#ffffff"
+                                size={20}
+                                cssOverride={{ marginRight: "8px" }}
+                            />
+                            Сохранение...
+                        </>
+                    ) : "Сохранить"}
+                </button>
+                <button
+                    onClick={handleCancel}
+                    className="cancel_button"
+                    disabled={isLoading}
+                >
+                    Отменить
+                </button>
+            </div>
         </div>
     );
 };
+
+export default CreateGame;
